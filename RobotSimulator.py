@@ -15,13 +15,13 @@ class RobotSimulator:
         
         # Load robot from URDF
         self.robot_id = p.loadURDF(urdf_path, useFixedBase=1, basePosition=[0, 0, 1])
-        self.get_active_joints()
+        self._get_active_joints()
         self.target_position = [0]*len(self.active_joints)
         
         # Flag to control the simulation loop
         self.running = False
 
-    def get_active_joints(self):
+    def _get_active_joints(self):
         num_joints = p.getNumJoints(self.robot_id)
         print(f"Total number of joints: {num_joints}")
 
@@ -69,6 +69,22 @@ class RobotSimulator:
     def close(self):
         self.stop_simulation()
         p.disconnect()
+
+    def get_joint_state(self):
+        """Returns the state of the robot."""
+        joint_states = {
+            'position': [],
+            'velocity': [],
+            'reaction_forces': [],
+            'torque': [],
+        }
+        for i in self.active_joints:
+            state = p.getJointState(self.robot_id, i)
+            joint_states['position'].append(state[0])
+            joint_states['velocity'].append(state[1])
+            joint_states['reaction_forces'].append(state[2])
+            joint_states['torque'].append(state[3])
+        return joint_states
 
 if __name__=='__main__':
     urdf_path = "./ur_description/ur5e.urdf"
