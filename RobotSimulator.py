@@ -11,7 +11,7 @@ class RobotSimulator:
         p.setGravity(0, 0, -9.81)
 
         # Load environment 
-        plane_id = p.loadURDF("plane.urdf")
+        #plane_id = p.loadURDF("plane.urdf")
         
         # Load robot from URDF
         self.robot_id = p.loadURDF(urdf_path, useFixedBase=1, basePosition=[0, 0, 1])
@@ -55,11 +55,12 @@ class RobotSimulator:
         else:
             print("Error: Invalid target position length")
 
-    def load_object(self, urdf_path, position=[0, 0, 1], orientation=[0, 0, 0], fix_base=1):
+    def load_object(self, urdf_path, position, orientation=[0, 0, 0], scale=1.0, fix_base=1):
         """Load an object into the simulation."""
         object_id = p.loadURDF(urdf_path, 
                                basePosition=position, 
                                baseOrientation=p.getQuaternionFromEuler(orientation), 
+                               globalScaling=scale,
                                useFixedBase=fix_base)
         print(f"Loaded object ID: {object_id}")
         return object_id
@@ -89,6 +90,31 @@ class RobotSimulator:
             joint_states['torque'].append(state[3])
         return joint_states
 
+    def sphere(self):
+
+        # Create a sphere
+        sphere_collision_shape = p.createCollisionShape(shapeType=p.GEOM_SPHERE, radius=0.5)
+        sphere_visual_shape = p.createVisualShape(shapeType=p.GEOM_SPHERE, radius=0.5)
+
+        # box_collision_shape = p.createCollisionShape(shapeType=p.GEOM_BOX, halfExtents=[0.5, 0.5, 0.5])
+        # capsule_collision_shape = p.createCollisionShape(shapeType=p.GEOM_CAPSULE, radius=0.5, length=1.0)
+        # cylinder_collision_shape = p.createCollisionShape(shapeType=p.GEOM_CYLINDER, radius=0.5, length=1.0)
+        # cone_collision_shape = p.createCollisionShape(shapeType=p.GEOM_CONE, radius=0.5, height=1.0)
+        # plane_collision_shape = p.createCollisionShape(shapeType=p.GEOM_PLANE, planeNormal=[0, 0, 1])
+        # mesh_collision_shape = p.createCollisionShape(shapeType=p.GEOM_MESH, fileName="path/to/mesh.obj", meshScale=[1.0, 1.0, 1.0])
+
+        # Create a multi-body object
+        sphere_body = p.createMultiBody(baseCollisionShapeIndex=sphere_collision_shape,
+                                        baseVisualShapeIndex=sphere_visual_shape,
+                                        basePosition=[0, 0, 1])
+        # Define the orientation as a quaternion
+        orientation_quaternion = p.getQuaternionFromEuler([0, 0, np.pi/2])  # 90 degrees rotation around z-axis
+
+        # Reset the base position and orientation
+        p.resetBasePositionAndOrientation(sphere_body, [0, 0, 1], orientation_quaternion)
+        time.sleep(3)
+        p.removeBody(sphere_body)
+
 if __name__=='__main__':
     urdf_path = "./ur_description/ur5e.urdf"
     sim = RobotSimulator(urdf_path)
@@ -102,16 +128,18 @@ if __name__=='__main__':
             # Change target positions periodically
             sim.set_target_position([0, -1, 1, -1, -1.57, 0])
             time.sleep(3)
-            sim.set_target_position([0.5, -0.5, 0.5, -0.5, -1.57, 0.5])
-            time.sleep(3)
+            #sim.set_target_position([0.5, -0.5, 0.5, -0.5, -1.57, 0.5])
+            #time.sleep(3)
 
             # Load an object (example: a cube)
-            cube_id = sim.load_object("cube.urdf", position=[0.5, 0.5, 1])
-
+            #cube_id = sim.load_object("cube.urdf", position=[0.5, 0.5, 1], scale=0.1)
+            #cube_id = sim.load_object("cube.urdf", position=[0.5, 0.5, 0.5], scale=1)
+            #sphere_id = sim.load_object("sphere2.urdf", position=[0, 0, 0], scale=2)
+            sim.sphere()
             time.sleep(3)  # Keep the cube for a while
 
             # Unload the object
-            sim.unload_object(cube_id)
+            #sim.unload_object(sphere_id)
 
             time.sleep(3)  # Wait before changing positions again
 
