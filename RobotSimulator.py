@@ -55,9 +55,12 @@ class RobotSimulator:
         else:
             print("Error: Invalid target position length")
 
-    def load_object(self, urdf_path, position=[0, 0, 1], orientation=[0, 0, 0]):
+    def load_object(self, urdf_path, position=[0, 0, 1], orientation=[0, 0, 0], fix_base=1):
         """Load an object into the simulation."""
-        object_id = p.loadURDF(urdf_path, basePosition=position, baseOrientation=p.getQuaternionFromEuler(orientation))
+        object_id = p.loadURDF(urdf_path, 
+                               basePosition=position, 
+                               baseOrientation=p.getQuaternionFromEuler(orientation), 
+                               useFixedBase=fix_base)
         print(f"Loaded object ID: {object_id}")
         return object_id
 
