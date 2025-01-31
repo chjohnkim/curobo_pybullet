@@ -1,25 +1,118 @@
 from RobotSimulator import RobotSimulator
 from MotionPlanner import MotionPlanner
+from curobo.geom.types import WorldConfig, Sphere, Cuboid
 import time 
+import numpy as np
+"""
+obstacle_config = {
+    "sphere": {
+        "sphere_1": {
+            "radius": 0.2, 
+            "pose": [0.0, 0.6, 0.4, 1, 0, 0, 0.0],  # x, y, z, qw, qx, qy, qz
+        },
+        "sphere_2": {
+            "radius": 0.2, 
+            "pose": [0.0, 0.6, -0.4, 1, 0, 0, 0.0],  # x, y, z, qw, qx, qy, qz
+        },
 
+    },
+}
+"""
+
+world_config_dict = {
+    "cuboid": {
+        "cuboid_1": {
+            "dims": [0.4, 0.4, 0.4],  # x, y, z
+            "pose": np.asarray([0.0, 0.6, 0.4, 1, 0, 0, 0.0]),  # x, y, z, qw, qx, qy, qz
+        },
+        "cuboid_2": {
+            "dims": [0.4, 0.4, 0.4],  # x, y, z
+            "pose": np.asarray([0.0, -0.6, 0.4, 1, 0, 0, 0.0]),  # x, y, z, qw, qx, qy, qz
+        },
+        "cuboid_3": {
+            "dims": [0.4, 0.4, 0.4],  # x, y, z
+            "pose": np.asarray([0.0, 0.6, 0.8, 1, 0, 0, 0.0]),  # x, y, z, qw, qx, qy, qz
+        },
+        "cuboid_4": {
+            "dims": [0.4, 0.4, 0.4],  # x, y, z
+            "pose": np.asarray([0.0, -0.6, 0.8, 1, 0, 0, 0.0]),  # x, y, z, qw, qx, qy, qz
+        },
+        "ground": {
+            "dims": [5.0, 5.0, 0.2],  # x, y, z
+            "pose": np.asarray([0.0, 0.0, -0.1, 1, 0, 0, 0.0]),  # x, y, z, qw, qx, qy, qz
+        },
+
+    },
+}
+'''
+curobo_obstacles = []
+for key, value in obstacle_config["cuboid"].items():
+    curobo_obstacles.append(Cuboid(name=key, dims=value["dims"], pose=value["pose"]))
+world_model = WorldConfig(
+   #mesh=[obstacle_2],
+   cuboid=curobo_obstacles,
+   #capsule=[obstacle_3],
+   #cylinder=[obstacle_4],
+   #sphere=curobo_obstacles,
+)
+'''
+#collision_supported_world = WorldConfig.create_collision_support_world(world_model)
+
+target_poses = [
+    [-0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
+    [ 0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
+    [-0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
+    [ 0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
+    [-0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
+    [ 0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
+    [-0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
+    [ 0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
+    [-0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
+    [ 0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
+    [-0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
+    [ 0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
+    [-0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
+    [ 0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
+    [-0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
+    [ 0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
+    [-0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
+    [ 0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
+    [-0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
+    [ 0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
+    [-0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
+    [ 0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
+    [-0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
+    [ 0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
+]
 if __name__=='__main__':
     urdf_path = "./ur_description/ur5e.urdf"
     sim = RobotSimulator(urdf_path)
     planner = MotionPlanner()
-    # Start the simulation in a background thread
+
+    # Initialize the simulation in a background thread
     sim.start_simulation()
-    js = sim.get_joint_state()
-    
-    result, success = planner.plan(js['position'], [-0.4, 0.0, 0.4, 1.0, 0.0, 0.0, 0.0])
-    dt = result.interpolation_dt
-    joint_waypoints = result.get_interpolated_plan().position
-    joint_waypoints = joint_waypoints.detach().cpu().numpy()
+    sim.set_target_position([0, -1, 1, -1, -1.57, 0])
+    time.sleep(1)
 
     try:
-        for waypoint in joint_waypoints:
-            # Change target positions periodically
-            sim.set_target_position(waypoint)
-            time.sleep(dt)
+        for target_pose in target_poses:
+            js = sim.get_joint_state()
+            sim.update_world(world_config_dict)
+            planner.update_world(world_config_dict)
+            result, success = planner.plan(js['position'], target_pose)
+            if success:
+                joint_waypoints = result.get_interpolated_plan().position
+                joint_waypoints = joint_waypoints.detach().cpu().numpy()
+                for waypoint in joint_waypoints:
+                    t_start = time.time()
+                    # Change target positions periodically
+                    sim.set_target_position(waypoint)
+                    t_elapsed = time.time()-t_start  
+                    if t_elapsed < result.interpolation_dt:
+                        time.sleep(result.interpolation_dt - t_elapsed)
+            for key, value in world_config_dict["cuboid"].items():
+                if "cuboid" in key:
+                    world_config_dict["cuboid"][key]["pose"][:3]-=np.random.normal(loc=-0.05, scale=0.1)
 
     except KeyboardInterrupt:
         print("Stopping simulation...")

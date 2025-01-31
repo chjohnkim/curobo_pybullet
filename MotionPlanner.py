@@ -24,6 +24,7 @@ class MotionPlanner:
         motion_gen_config = MotionGenConfig.load_from_robot_config(
             "ur5e.yml",
             world_config_placeholder,
+            collision_cache={"obb": 10},#, "mesh": 10},
             interpolation_dt=0.01,
         )
         print(f'Loaded motion gen config: {time.time()-t:.3f}s')
@@ -66,9 +67,10 @@ class MotionPlanner:
         print(f'Planning Success: {success} | Planning time: {time.time()-t:.3f}s')
         return result, success
 
-    def update_world(self, world_config):
+    def update_world(self, world_config_dict):
         t = time.time()
-        world_config = WorldConfig.from_dict(world_config)
+        # TODO: Implement type checking here
+        world_config = WorldConfig.from_dict(world_config_dict)
         self.motion_gen.update_world(world_config)
         print(f'Updated world config: {time.time()-t:.3f}s')
 
@@ -88,7 +90,7 @@ if __name__ == "__main__":
         },
     }
     mp = MotionPlanner()
-    mp.update_world(world_config)
+    #mp.update_world(world_config)
     start_joint_state = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     target_pose = [-0.4, 0.0, 0.4, 1.0, 0.0, 0.0, 0.0]
     mp.plan(start_joint_state, target_pose)
