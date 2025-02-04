@@ -93,12 +93,16 @@ class RobotSimulator:
         return joint_states
 
     def update_world(self, world_config_dict):
-        for object in self.objects[:]:
+        for object in self.objects:
             self.remove_object(object)
-            self.objects.remove(object)
+        self.objects.clear()
             
         for key, value in world_config_dict["cuboid"].items():        
             object = self.add_box(half_extents=np.array(value["dims"])/2, position=value["pose"][:3])
+            self.objects.append(object)
+
+        for key, value in world_config_dict["mesh"].items():        
+            object = self.add_mesh(file_name=value["file_path"], scale=value["scale"], position=value["pose"][:3])
             self.objects.append(object)
 
     def add_sphere(self, radius, position):
@@ -120,6 +124,17 @@ class RobotSimulator:
                                     baseVisualShapeIndex=visual_shape,
                                     basePosition=position)
         return object
+
+    def add_mesh(self, file_name, scale, position):
+        # Create a box
+        collision_shape = p.createCollisionShape(shapeType=p.GEOM_MESH, fileName=file_name, meshScale=[scale, scale, scale])
+        visual_shape = p.createVisualShape(shapeType=p.GEOM_MESH, fileName=file_name, meshScale=[scale, scale, scale])
+        # Create a multi-body object
+        object = p.createMultiBody(baseCollisionShapeIndex=collision_shape,
+                                    baseVisualShapeIndex=visual_shape,
+                                    basePosition=position)
+        return object
+
 
         # box_collision_shape = p.createCollisionShape(shapeType=p.GEOM_BOX, halfExtents=[0.5, 0.5, 0.5])
         # capsule_collision_shape = p.createCollisionShape(shapeType=p.GEOM_CAPSULE, radius=0.5, length=1.0)

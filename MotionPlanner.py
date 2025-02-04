@@ -24,7 +24,7 @@ class MotionPlanner:
         motion_gen_config = MotionGenConfig.load_from_robot_config(
             "ur5e.yml",
             world_config_placeholder,
-            collision_cache={"obb": 10},#, "mesh": 10},
+            collision_cache={"obb": 10, "mesh": 10},
             interpolation_dt=0.01,
         )
         print(f'Loaded motion gen config: {time.time()-t:.3f}s')
@@ -61,7 +61,7 @@ class MotionPlanner:
                 "wrist_3_joint",
             ],
         )
-        result = self.motion_gen.plan_single(start_state, goal_pose, MotionGenPlanConfig(max_attempts=1))        
+        result = self.motion_gen.plan_single(start_state, goal_pose, MotionGenPlanConfig(max_attempts=10))        
         #traj = result.get_interpolated_plan()  # result.interpolation_dt has the dt between timesteps
         success = result.success.detach().cpu().item()
         print(f'Planning Success: {success} | Planning time: {time.time()-t:.3f}s')

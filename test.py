@@ -20,28 +20,18 @@ obstacle_config = {
 """
 
 world_config_dict = {
+    "mesh": {
+        "tree_1": {
+            "file_path": "/home/johnkim/projects/curobo_pybullet/palm_tree/palm_tree.obj",
+            "pose": np.asarray([1.0, 0.0, 0, 1.0, 0.0, 0.0, 0.0]),
+            "scale": 0.001,
+        },
+    },    
     "cuboid": {
         "cuboid_1": {
-            "dims": [0.4, 0.4, 0.4],  # x, y, z
-            "pose": np.asarray([0.0, 0.6, 0.4, 1, 0, 0, 0.0]),  # x, y, z, qw, qx, qy, qz
-        },
-        "cuboid_2": {
-            "dims": [0.4, 0.4, 0.4],  # x, y, z
-            "pose": np.asarray([0.0, -0.6, 0.4, 1, 0, 0, 0.0]),  # x, y, z, qw, qx, qy, qz
-        },
-        "cuboid_3": {
-            "dims": [0.4, 0.4, 0.4],  # x, y, z
-            "pose": np.asarray([0.0, 0.6, 0.8, 1, 0, 0, 0.0]),  # x, y, z, qw, qx, qy, qz
-        },
-        "cuboid_4": {
-            "dims": [0.4, 0.4, 0.4],  # x, y, z
-            "pose": np.asarray([0.0, -0.6, 0.8, 1, 0, 0, 0.0]),  # x, y, z, qw, qx, qy, qz
-        },
-        "ground": {
-            "dims": [5.0, 5.0, 0.2],  # x, y, z
+            "dims": [2.0, 2.0, 0.2],  # x, y, z
             "pose": np.asarray([0.0, 0.0, -0.1, 1, 0, 0, 0.0]),  # x, y, z, qw, qx, qy, qz
         },
-
     },
 }
 '''
@@ -59,14 +49,6 @@ world_model = WorldConfig(
 #collision_supported_world = WorldConfig.create_collision_support_world(world_model)
 
 target_poses = [
-    [-0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
-    [ 0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
-    [-0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
-    [ 0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
-    [-0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
-    [ 0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
-    [-0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
-    [ 0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
     [-0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
     [ 0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
     [-0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
@@ -110,9 +92,10 @@ if __name__=='__main__':
                     t_elapsed = time.time()-t_start  
                     if t_elapsed < result.interpolation_dt:
                         time.sleep(result.interpolation_dt - t_elapsed)
-            for key, value in world_config_dict["cuboid"].items():
-                if "cuboid" in key:
-                    world_config_dict["cuboid"][key]["pose"][:3]-=np.random.normal(loc=-0.05, scale=0.1)
+            for key, value in world_config_dict["mesh"].items():
+                radius = np.random.uniform(0.4, 0.6)
+                theta = np.random.uniform(0, 2*np.pi)
+                world_config_dict["mesh"][key]["pose"][:2] = np.array([radius*np.cos(theta), radius*np.sin(theta)])
 
     except KeyboardInterrupt:
         print("Stopping simulation...")
