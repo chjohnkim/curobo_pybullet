@@ -1,6 +1,4 @@
 from RobotSimulator import RobotSimulator
-from MotionPlanner import MotionPlanner
-from curobo.geom.types import WorldConfig, Sphere, Cuboid
 import time 
 import numpy as np
 """
