@@ -96,14 +96,16 @@ class RobotSimulator:
         for object in self.objects:
             self.remove_object(object)
         self.objects.clear()
-            
-        for key, value in world_config_dict["cuboid"].items():        
-            object = self.add_box(half_extents=np.array(value["dims"])/2, position=value["pose"][:3])
-            self.objects.append(object)
 
-        for key, value in world_config_dict["mesh"].items():        
-            object = self.add_mesh(file_name=value["file_path"], scale=value["scale"], position=value["pose"][:3])
-            self.objects.append(object)
+        if "cuboid" in world_config_dict:
+            for key, value in world_config_dict["cuboid"].items():        
+                object = self.add_box(half_extents=np.array(value["dims"])/2, position=value["pose"][:3])
+                self.objects.append(object)
+
+        if "mesh" in world_config_dict:
+            for key, value in world_config_dict["mesh"].items():        
+                object = self.add_mesh(file_name=value["file_path"], scale=value["scale"], position=value["pose"][:3])
+                self.objects.append(object)
 
     def add_sphere(self, radius, position):
         # Create a sphere
