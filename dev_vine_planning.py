@@ -1,13 +1,14 @@
-from RobotSimulator import RobotSimulator
-from MotionPlanner import MotionPlanner
+from src.RobotSimulator import RobotSimulator
+from src.MotionPlanner import MotionPlanner
 import time 
 import numpy as np
 import open3d as o3d
-from utils import pointcloud_to_voxelgrid, voxelgrid_to_mesh, mesh_file_to_world_config_dict
+from src.utils import pointcloud_to_voxelgrid, voxelgrid_to_mesh, mesh_file_to_world_config_dict
 from copy import deepcopy
 import tempfile
 from scipy.spatial.transform import Rotation as R
 import random
+import os
 
 if __name__=='__main__':
 
@@ -20,9 +21,10 @@ if __name__=='__main__':
     pcd.points = o3d.utility.Vector3dVector(points)
     voxel_size = 0.01
 
-    urdf_path = "./ur_description/ur5e.urdf"
+    urdf_path = os.path.abspath("./assets/ur_description/ur5e.urdf")
+    robot_yml = os.path.abspath("./config/ur5e.yml")
     sim = RobotSimulator(urdf_path)
-    planner = MotionPlanner()
+    planner = MotionPlanner(robot_yml)
 
     # Initialize the simulation in a background thread
     sim.start_simulation()

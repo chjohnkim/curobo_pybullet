@@ -1,8 +1,11 @@
-from RobotSimulator import RobotSimulator
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from src.RobotSimulator import RobotSimulator
 import time 
 import numpy as np
 import open3d as o3d
-from utils import pointcloud_to_voxelgrid, voxelgrid_to_mesh, \
+from src.utils import pointcloud_to_voxelgrid, voxelgrid_to_mesh, \
                 mesh_file_to_world_config_dict
 from copy import deepcopy
 import tempfile
@@ -19,7 +22,7 @@ if __name__=='__main__':
     pcd.colors = o3d.utility.Vector3dVector(np.random.uniform(0, 1, size=(N, 3)))
     voxel_size = 0.01
 
-    urdf_path = "./ur_description/ur5e.urdf"
+    urdf_path = "./assets/ur_description/ur5e.urdf"
     sim = RobotSimulator(urdf_path)
 
     # Initialize the simulation in a background thread

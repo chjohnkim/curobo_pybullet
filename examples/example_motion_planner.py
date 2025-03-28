@@ -1,5 +1,8 @@
-from RobotSimulator import RobotSimulator
-from MotionPlanner import MotionPlanner
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from src.RobotSimulator import RobotSimulator
+from src.MotionPlanner import MotionPlanner
 from curobo.geom.types import WorldConfig, Sphere, Cuboid
 import time 
 import numpy as np
@@ -22,7 +25,7 @@ obstacle_config = {
 world_config_dict = {
     "mesh": {
         "tree_1": {
-            "file_path": "/home/johnkim/projects/curobo_pybullet/palm_tree/palm_tree.obj",
+            "file_path": "/home/johnkim/projects/curobo_pybullet/assets/palm_tree/palm_tree.obj",
             "pose": np.asarray([1.0, 0.0, 0, 1.0, 0.0, 0.0, 0.0]),
             "scale": 0.001,
         },
@@ -67,7 +70,7 @@ target_poses = [
     [ 0.4, 0.0, 0.3, 0.0, 1.0, 0.0, 0.0],
 ]
 if __name__=='__main__':
-    urdf_path = "./ur_description/ur5e.urdf"
+    urdf_path = "./assets/ur_description/ur5e.urdf"
     sim = RobotSimulator(urdf_path)
     planner = MotionPlanner()
 

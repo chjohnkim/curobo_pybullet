@@ -7,10 +7,10 @@ from curobo.types.math import Pose
 from curobo.types.robot import JointState
 from curobo.wrap.reacher.motion_gen import MotionGen, MotionGenConfig, MotionGenPlanConfig
 from curobo.geom.types import WorldConfig
-from utils import color_print
+from src.utils import color_print
 
 class MotionPlanner:
-    def __init__(self):
+    def __init__(self, robot_yml="ur5e.yml"):
         world_config_placeholder = {
             "cuboid": {
                 "placeholder": {
@@ -23,7 +23,7 @@ class MotionPlanner:
         # Load Robot Config
         t = time.time()
         motion_gen_config = MotionGenConfig.load_from_robot_config(
-            "ur5e.yml",
+            robot_yml,
             world_config_placeholder,
             collision_cache={"obb": 10, "mesh": 10},
             interpolation_dt=0.01,

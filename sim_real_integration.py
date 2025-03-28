@@ -3,9 +3,9 @@ import click
 import os
 import threading
 from scipy.spatial.transform import Rotation as R
-from ur5_controller import URControl as Robot
-from keyboard_handler import KeyboardHandler
-from RobotSimulator import RobotSimulator
+from src.ur5_controller import URControl as Robot
+from src.keyboard_handler import KeyboardHandler
+from src.RobotSimulator import RobotSimulator
 import time
 
 @click.command()
