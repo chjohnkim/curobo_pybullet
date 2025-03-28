@@ -15,11 +15,11 @@ def pointcloud_to_voxelgrid(pcd, voxel_size):
 
     voxel_grid = o3d.geometry.VoxelGrid.create_from_point_cloud(pcd, voxel_size=voxel_size)
     #o3d.visualization.draw_geometries([voxel_grid])
-    # centers = np.asarray([
-    #     voxel_grid.get_voxel_center_coordinate(voxel.grid_index)
-    #     for voxel in voxel_grid.get_voxels()
-    # ])
-    return voxel_grid
+    centers = np.asarray([
+        voxel_grid.get_voxel_center_coordinate(voxel.grid_index)
+        for voxel in voxel_grid.get_voxels()
+    ])
+    return centers # voxel_grid
 
 def voxelgrid_to_mesh(voxel_grid):
     voxel_size = voxel_grid.voxel_size
@@ -46,33 +46,33 @@ def mesh_file_to_world_config_dict(mesh_path):
     } 
     return world_config_dict
 
-# def voxels_to_world_config_dict(voxel_centers, voxel_size):
-#     """
-#     Create a world_config_dict with a cuboid entry for each voxel center.
+def voxels_to_world_config_dict(voxel_centers, voxel_size):
+    """
+    Create a world_config_dict with a cuboid entry for each voxel center.
 
-#     Args:
-#         voxel_centers (np.ndarray): Nx3 array of voxel centers.
-#         voxel_size (float or list/tuple): Size of the voxel cuboid. Can be scalar or [x, y, z].
+    Args:
+        voxel_centers (np.ndarray): Nx3 array of voxel centers.
+        voxel_size (float or list/tuple): Size of the voxel cuboid. Can be scalar or [x, y, z].
 
-#     Returns:
-#         dict: A world_config_dict with each voxel as a named cuboid entry.
-#     """
-#     if isinstance(voxel_size, (int, float)):
-#         dims = [voxel_size] * 3
-#     else:
-#         dims = list(voxel_size)
+    Returns:
+        dict: A world_config_dict with each voxel as a named cuboid entry.
+    """
+    if isinstance(voxel_size, (int, float)):
+        dims = [voxel_size] * 3
+    else:
+        dims = list(voxel_size)
 
-#     cuboids = {}
-#     for i, center in enumerate(voxel_centers):
-#         name = f"cuboid_{i+1}"
-#         pose = np.concatenate([center, [1.0, 0.0, 0.0, 0.0]])  # identity quaternion
-#         cuboids[name] = {
-#             "dims": dims,
-#             "pose": pose,
-#         }
+    cuboids = {}
+    for i, center in enumerate(voxel_centers):
+        name = f"cuboid_{i+1}"
+        pose = np.concatenate([center, [1.0, 0.0, 0.0, 0.0]])  # identity quaternion
+        cuboids[name] = {
+            "dims": dims,
+            "pose": pose,
+        }
 
-#     world_config_dict = {"cuboid": cuboids}
-#     return world_config_dict
+    world_config_dict = {"cuboid": cuboids}
+    return world_config_dict
 
 if __name__=='__main__':
     import timeit

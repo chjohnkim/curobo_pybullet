@@ -24,7 +24,7 @@ class MotionPlanner:
         motion_gen_config = MotionGenConfig.load_from_robot_config(
             "ur5e.yml",
             world_config_placeholder,
-            collision_cache={"obb": 10, "mesh": 10},
+            collision_cache={"obb": 50, "mesh": 10},
             interpolation_dt=0.01,
         )
         print(f'Loaded motion gen config: {time.time()-t:.3f}s')

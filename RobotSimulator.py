@@ -92,6 +92,25 @@ class RobotSimulator:
             joint_states['torque'].append(state[3])
         return joint_states
 
+    def get_pose(self, link_name='tool0'):
+        # Search for the link index by name
+        link_index = None
+        for i in range(p.getNumJoints(self.robot_id)):
+            joint_info = p.getJointInfo(self.robot_id, i)
+            joint_name = joint_info[12].decode('utf-8')
+            if joint_name == link_name:
+                link_index = i
+                break
+
+        if link_index is None:
+            print(f"Link name '{link_name}' not found.")
+            return None
+
+        link_state = p.getLinkState(self.robot_id, link_index)
+        position = np.asarray(link_state[0])  # position (x, y, z)
+        quat_xyzw = np.asarray(link_state[1])  # orientation (x, y, z, w)
+        return position, quat_xyzw 
+
     def update_world(self, world_config_dict):
         for object in self.objects:
             self.remove_object(object)
