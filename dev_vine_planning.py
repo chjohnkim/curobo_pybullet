@@ -3,7 +3,7 @@ from MotionPlanner import MotionPlanner
 import time 
 import numpy as np
 import open3d as o3d
-from utils import pointcloud_to_voxelgrid, voxelgrid_to_mesh, mesh_file_to_world_config_dict, voxels_to_world_config_dict
+from utils import pointcloud_to_voxelgrid, voxelgrid_to_mesh, mesh_file_to_world_config_dict
 from copy import deepcopy
 import tempfile
 from scipy.spatial.transform import Rotation as R
@@ -18,7 +18,7 @@ if __name__=='__main__':
     points[:, 2] = z  # only z changes
     pcd = o3d.geometry.PointCloud()
     pcd.points = o3d.utility.Vector3dVector(points)
-    voxel_size = 0.05
+    voxel_size = 0.01
 
     urdf_path = "./ur_description/ur5e.urdf"
     sim = RobotSimulator(urdf_path)
@@ -37,12 +37,12 @@ if __name__=='__main__':
             pcd_copy.translate(np.array([radius*np.cos(theta), radius*np.sin(theta), 0]))
             # Construct world_config_dict
             voxel_grid = pointcloud_to_voxelgrid(pcd_copy, voxel_size)
-            # mesh = voxelgrid_to_mesh(voxel_grid)
-            # with tempfile.NamedTemporaryFile(suffix=".obj", delete=False) as tmp_file:
-            #     mesh_path = tmp_file.name
-            #     o3d.io.write_triangle_mesh(mesh_path, mesh)
-            # world_config_dict = mesh_file_to_world_config_dict(mesh_path)
-            world_config_dict = voxels_to_world_config_dict(voxel_grid, voxel_size)
+            mesh = voxelgrid_to_mesh(voxel_grid)
+            with tempfile.NamedTemporaryFile(suffix=".obj", delete=False) as tmp_file:
+                mesh_path = tmp_file.name
+                o3d.io.write_triangle_mesh(mesh_path, mesh)
+            world_config_dict = mesh_file_to_world_config_dict(mesh_path)
+
             # Update sim and planner with world_config
             sim.update_world(world_config_dict)
             planner.update_world(world_config_dict)

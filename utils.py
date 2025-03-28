@@ -15,11 +15,11 @@ def pointcloud_to_voxelgrid(pcd, voxel_size):
 
     voxel_grid = o3d.geometry.VoxelGrid.create_from_point_cloud(pcd, voxel_size=voxel_size)
     #o3d.visualization.draw_geometries([voxel_grid])
-    centers = np.asarray([
-        voxel_grid.get_voxel_center_coordinate(voxel.grid_index)
-        for voxel in voxel_grid.get_voxels()
-    ])
-    return centers # voxel_grid
+    # centers = np.asarray([
+    #     voxel_grid.get_voxel_center_coordinate(voxel.grid_index)
+    #     for voxel in voxel_grid.get_voxels()
+    # ])
+    return voxel_grid
 
 def voxelgrid_to_mesh(voxel_grid):
     voxel_size = voxel_grid.voxel_size
@@ -46,33 +46,78 @@ def mesh_file_to_world_config_dict(mesh_path):
     } 
     return world_config_dict
 
-def voxels_to_world_config_dict(voxel_centers, voxel_size):
+def color_print(text, fg="default", bg="default", style="normal"):
     """
-    Create a world_config_dict with a cuboid entry for each voxel center.
-
-    Args:
-        voxel_centers (np.ndarray): Nx3 array of voxel centers.
-        voxel_size (float or list/tuple): Size of the voxel cuboid. Can be scalar or [x, y, z].
-
-    Returns:
-        dict: A world_config_dict with each voxel as a named cuboid entry.
+    Print `text` in a specified foreground color, background color, and style
+    using ANSI escape sequences.
+    
+    :param text:  The text to be printed
+    :param fg:    The foreground color (string)
+    :param bg:    The background color (string)
+    :param style: The text style (string)
     """
-    if isinstance(voxel_size, (int, float)):
-        dims = [voxel_size] * 3
-    else:
-        dims = list(voxel_size)
+    # ANSI styles
+    styles = {
+        "normal":      "0",
+        "bold":        "1",
+        "faint":       "2",
+        "italic":      "3",
+        "underline":   "4",
+        "blink":       "5",
+        "negative":    "7",
+        "concealed":   "8",
+        "strikethrough": "9"
+    }
 
-    cuboids = {}
-    for i, center in enumerate(voxel_centers):
-        name = f"cuboid_{i+1}"
-        pose = np.concatenate([center, [1.0, 0.0, 0.0, 0.0]])  # identity quaternion
-        cuboids[name] = {
-            "dims": dims,
-            "pose": pose,
-        }
+    # Foreground (text) colors
+    fg_colors = {
+        "default":     "39",
+        "black":       "30",
+        "red":         "31",
+        "green":       "32",
+        "yellow":      "33",
+        "blue":        "34",
+        "magenta":     "35",
+        "cyan":        "36",
+        "light_gray":  "37",
+        "dark_gray":   "90",
+        "light_red":   "91",
+        "light_green": "92",
+        "light_yellow":"93",
+        "light_blue":  "94",
+        "light_magenta":"95",
+        "light_cyan":  "96",
+        "white":       "97"
+    }
 
-    world_config_dict = {"cuboid": cuboids}
-    return world_config_dict
+    # Background colors
+    bg_colors = {
+        "default":     "49",
+        "black":       "40",
+        "red":         "41",
+        "green":       "42",
+        "yellow":      "43",
+        "blue":        "44",
+        "magenta":     "45",
+        "cyan":        "46",
+        "light_gray":  "47",
+        "dark_gray":   "100",
+        "light_red":   "101",
+        "light_green": "102",
+        "light_yellow":"103",
+        "light_blue":  "104",
+        "light_magenta":"105",
+        "light_cyan":  "106",
+        "white":       "107"
+    }
+
+    # Get the correct codes from the dictionaries (fallback to "normal"/"default" if not found)
+    style_code = styles.get(style, styles["normal"])
+    fg_code    = fg_colors.get(fg, fg_colors["default"])
+    bg_code    = bg_colors.get(bg, bg_colors["default"])
+
+    # Construct and print the ANSI escaped string
+    print(f"\033[{style_code};{fg_code};{bg_code}m{text}\033[0m")
 
 if __name__=='__main__':
     import timeit
@@ -85,7 +130,7 @@ if __name__=='__main__':
     o3d.visualization.draw_geometries([pcd])
 
     voxel_size = 0.1
-    wrapped = lambda: pointcloud_to_voxels(pcd, voxel_size=voxel_size) 
+    wrapped = lambda: pointcloud_to_voxelgrid(pcd, voxel_size=voxel_size) 
     time = timeit.timeit(wrapped, number=1)
 
     print(f"Average time: {time / 1:.6f} seconds")

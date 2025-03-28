@@ -7,6 +7,7 @@ from curobo.types.math import Pose
 from curobo.types.robot import JointState
 from curobo.wrap.reacher.motion_gen import MotionGen, MotionGenConfig, MotionGenPlanConfig
 from curobo.geom.types import WorldConfig
+from utils import color_print
 
 class MotionPlanner:
     def __init__(self):
@@ -24,16 +25,18 @@ class MotionPlanner:
         motion_gen_config = MotionGenConfig.load_from_robot_config(
             "ur5e.yml",
             world_config_placeholder,
-            collision_cache={"obb": 50, "mesh": 10},
+            collision_cache={"obb": 10, "mesh": 10},
             interpolation_dt=0.01,
         )
-        print(f'Loaded motion gen config: {time.time()-t:.3f}s')
+        color_print(f'Loaded motion gen config: {time.time()-t:.3f}s', 
+                    fg='yellow', style='bold')
 
         self.motion_gen = MotionGen(motion_gen_config)
         # Warm up    
         t = time.time()
         self.motion_gen.warmup()
-        print(f'Warmup: {time.time()-t:.3f}s\nPlanner loaded.')
+        color_print(f'Warmup: {time.time()-t:.3f}s\nPlanner loaded.', 
+                    fg='yellow', style='bold')
 
 
         #retract_cfg = motion_gen.get_retract_config()
@@ -64,15 +67,18 @@ class MotionPlanner:
         result = self.motion_gen.plan_single(start_state, goal_pose, MotionGenPlanConfig(max_attempts=60))        
         #traj = result.get_interpolated_plan()  # result.interpolation_dt has the dt between timesteps
         success = result.success.detach().cpu().item()
-        print(f'Planning Success: {success} | Planning time: {time.time()-t:.3f}s')
+        color_print(f'Planning Success: {success} | Planning time: {time.time()-t:.3f}s', 
+                    fg='green' if success else 'red', style='bold')
         return result, success
 
     def update_world(self, world_config_dict):
         t = time.time()
+        self.motion_gen.clear_world_cache()
         # TODO: Implement type checking here
         world_config = WorldConfig.from_dict(world_config_dict)
         self.motion_gen.update_world(world_config)
-        print(f'Updated world config: {time.time()-t:.3f}s')
+        color_print(f'Updated world config: {time.time()-t:.3f}s', 
+                    fg='yellow', style='bold')
 
 if __name__ == "__main__":
     world_config = {
