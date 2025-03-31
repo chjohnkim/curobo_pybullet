@@ -1,5 +1,7 @@
 import rtde_receive
 import rtde_control
+import time
+import numpy as np
 
 class URControl:
     def __init__(self, hostname):
@@ -45,6 +47,23 @@ class URControl:
                     Default is false, this means the function will block until the movement has completed.
         """
         self.rtde_c.moveL(pose, speed, acceleration, asynchronous)
+
+    def moveJ_waypoints(self, joint_waypoints, duration):
+        # ✅ Safety check: ensure joint_waypoints is a list of lists
+        if isinstance(joint_waypoints, np.ndarray):
+            joint_waypoints = joint_waypoints.tolist()
+        elif not isinstance(joint_waypoints, list):
+            raise TypeError("joint_waypoints must be a list or a NumPy array")
+        dt = duration/len(joint_waypoints)
+        lookahead_time = 0.1
+        gain = 300
+        for q in joint_waypoints:
+            t0 = time.time()
+            self.rtde_c.servoJ(q,
+                               0, 0, # dummy: speed & acc
+                               dt, lookahead_time, gain)
+            elapsed = time.time()-t0
+            time.sleep(max(0, dt - elapsed))
 
     def __enter__(self):
         return self
