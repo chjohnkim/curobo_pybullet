@@ -28,7 +28,7 @@ if __name__=='__main__':
 
     # Initialize the simulation in a background thread
     sim.start_simulation()
-    sim.set_target_position([0, -1, 1, -1, -3.14, 0])
+    sim.set_target_position([0, -1, 1, -1, 0, 0])
     time.sleep(1)
     try:
         for i in range(100):
@@ -60,7 +60,7 @@ if __name__=='__main__':
             # End-effector axis
             ee_axis = rotation_matrix[:,2]
             # Target position offset along end-effector axis
-            target_position = random_point - ee_axis*0.1
+            target_position = random_point - ee_axis*0.06
             # Target orientation same as initial
             quat_wxyz = np.concatenate(([quat_xyzw[3]], quat_xyzw[:3]))
             target_pose = target_position.tolist() + quat_wxyz.tolist()

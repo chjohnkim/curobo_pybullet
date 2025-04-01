@@ -67,7 +67,7 @@ class MotionPlanner:
         result = self.motion_gen.plan_single(start_state, goal_pose, MotionGenPlanConfig(max_attempts=60))        
         #traj = result.get_interpolated_plan()  # result.interpolation_dt has the dt between timesteps
         success = result.success.detach().cpu().item()
-        color_print(f'Planning Success: {success} | Planning time: {time.time()-t:.3f}s', 
+        color_print(f'Planning Success: {success} | Planning time: {time.time()-t:.3f}s | Status: {result.status}', 
                     fg='green' if success else 'red', style='bold')
         return result, success
 

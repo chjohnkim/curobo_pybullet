@@ -91,9 +91,12 @@ robot_cfg:
         - "center": [0.001, 0.001, -0.029]
           "radius": 0.043
       tool0:
-        - "center": [0.001, 0.001, 0.05]
-          "radius": -0.01 #0.05
-          
+        #- "center": [0.001, 0.001, 0.05]
+        #  "radius": -0.01 #0.05
+        - "center": [0.001, 0.001, 0.025]
+          "radius": 0.025
+        #- "center": [0.001, 0.001, 0.05]
+        #  "radius": 0.025
 
     collision_sphere_buffer: 0.0
     extra_collision_spheres: {}
